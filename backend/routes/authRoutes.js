@@ -138,6 +138,8 @@ router.post('/login', validate(loginSchema), loginUser);
  *   post:
  *     summary: Logout user
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Logged out
