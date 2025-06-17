@@ -13,6 +13,7 @@ import errorHandler from './middlewares/errorHandler.js';
 import userRoutes from './routes/userRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import authRoutes from './routes/authRoutes.js';
 
 // Load env vars
 dotenv.config();
@@ -75,6 +76,9 @@ app.use(limiter);
 
 // Routes
 app.use('/api/v1/users', userRoutes);
+
+app.use('/api/v1/auth', authRoutes);
+
 
 // Error handler
 app.use(errorHandler);
