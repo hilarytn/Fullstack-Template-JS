@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import errorHandler from './middlewares/errorHandler.js';
@@ -31,6 +32,8 @@ app.use(cors({
   origin: allowedOrigin,
   credentials: true,
 }));
+
+app.use(cookieParser());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 

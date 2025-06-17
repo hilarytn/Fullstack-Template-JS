@@ -44,7 +44,8 @@ export const loginUser = async (req, res) => {
   }
 
   const accessToken = generateAccessToken(user._id);
-  const refreshToken = generateRefreshToken();
+  const rawRefreshToken = generateRefreshToken();
+  const refreshToken = hashToken(rawRefreshToken);
   user.refreshToken = refreshToken;
   await user.save();
 
@@ -61,7 +62,7 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(204);
-  const user = await User.findOne({ refreshToken });
+  const user = await User.findOne({ refreshToken});
   if (user) {
     user.refreshToken = null;
     await user.save();
@@ -73,7 +74,8 @@ export const logoutUser = async (req, res) => {
 export const refreshAccessToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: 'No refresh token' });
-  const user = await User.findOne({ refreshToken });
+  
+  const user = await User.findOne({ refreshToken});
   if (!user) return res.status(403).json({ message: 'Invalid refresh token' });
   const accessToken = generateAccessToken(user._id);
   res.status(200).json({ accessToken });
