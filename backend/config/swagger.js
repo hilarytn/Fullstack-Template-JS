@@ -1,5 +1,8 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import dotenv from 'dotenv'
 
+dotenv.config()
+const SERVER_URL = process.env.SERVER_URL
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -19,7 +22,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://refactored-doodle-64w9jw5wrwq244wr-5000.app.github.dev/'
+        url: `${SERVER_URL}`
       }
     ]
   },
