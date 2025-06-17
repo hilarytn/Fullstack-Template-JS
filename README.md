@@ -1,2 +1,2 @@
-# Fullstack-Template-JS
-A Fullstack Web App Template in NodeJS and ReactJS
+# Fullstack-Template-JS - MERN Stack (MongoDB, ExpressJS, ReactJS and NodeJS)
+A Fullstack Web App Template
