@@ -32,23 +32,76 @@ app.use(cors({
   credentials: true,
 }));
 
-// Swagger setup
 const swaggerOptions = {
   swaggerDefinition: {
     openapi: '3.0.0',
     info: {
       title: 'Auth API',
       version: '1.0.0',
-      description: 'User Authentication API Documentation'
+      description: 'User Authentication API Documentation',
     },
-    servers: [
-      {
-        url: 'http://localhost:5000'
+    components: {
+      schemas: {
+        RegisterUser: {
+          type: 'object',
+          required: ['name', 'email', 'password'],
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Hilary Titus'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              example: 'hilary@example.com'
+            },
+            password: {
+              type: 'string',
+              example: 'password123'
+            }
+          }
+        },
+        LoginUser: {
+          type: 'object',
+          required: ['email', 'password'],
+          properties: {
+            email: {
+              type: 'string',
+              example: 'hilary@example.com'
+            },
+            password: {
+              type: 'string',
+              example: 'password123'
+            }
+          }
+        },
+        ForgotPassword: {
+          type: 'object',
+          required: ['email'],
+          properties: {
+            email: {
+              type: 'string',
+              example: 'hilary@example.com'
+            }
+          }
+        },
+        ResetPassword: {
+          type: 'object',
+          required: ['password'],
+          properties: {
+            password: {
+              type: 'string',
+              example: 'newStrongPassword'
+            }
+          }
+        }
       }
-    ]
+    },
+    servers: [{ url: 'http://localhost:5000' }]
   },
   apis: ['./routes/*.js']
 };
+
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
