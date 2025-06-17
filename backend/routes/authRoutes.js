@@ -174,7 +174,7 @@ router.post('/refresh-token', refreshAccessToken);
  *       200:
  *         description: Reset email sent
  */
-router.post('/forgot-password', protect, validate(forgotPasswordSchema), forgotPassword);
+router.post('/forgot-password', validate(forgotPasswordSchema), forgotPassword);
 
 /**
  * @swagger
