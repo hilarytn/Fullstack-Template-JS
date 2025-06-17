@@ -12,7 +12,7 @@ import connectDB from './config/db.js';
 import errorHandler from './middlewares/errorHandler.js';
 import userRoutes from './routes/userRoutes.js';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
+import { swaggerSpecs } from './config/swagger.js';
 import authRoutes from './routes/authRoutes.js';
 
 // Load env vars
@@ -32,78 +32,7 @@ app.use(cors({
   credentials: true,
 }));
 
-const swaggerOptions = {
-  swaggerDefinition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Auth API',
-      version: '1.0.0',
-      description: 'User Authentication API Documentation',
-    },
-    components: {
-      schemas: {
-        RegisterUser: {
-          type: 'object',
-          required: ['name', 'email', 'password'],
-          properties: {
-            name: {
-              type: 'string',
-              example: 'Hilary Titus'
-            },
-            email: {
-              type: 'string',
-              format: 'email',
-              example: 'hilary@example.com'
-            },
-            password: {
-              type: 'string',
-              example: 'password123'
-            }
-          }
-        },
-        LoginUser: {
-          type: 'object',
-          required: ['email', 'password'],
-          properties: {
-            email: {
-              type: 'string',
-              example: 'hilary@example.com'
-            },
-            password: {
-              type: 'string',
-              example: 'password123'
-            }
-          }
-        },
-        ForgotPassword: {
-          type: 'object',
-          required: ['email'],
-          properties: {
-            email: {
-              type: 'string',
-              example: 'hilary@example.com'
-            }
-          }
-        },
-        ResetPassword: {
-          type: 'object',
-          required: ['password'],
-          properties: {
-            password: {
-              type: 'string',
-              example: 'newStrongPassword'
-            }
-          }
-        }
-      }
-    },
-    servers: [{ url: 'https://refactored-doodle-64w9jw5wrwq244wr-5000.app.github.dev/' }]
-  },
-  apis: ['./routes/*.js']
-};
-
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Security headers
 app.use(helmet());
