@@ -97,7 +97,7 @@ const swaggerOptions = {
         }
       }
     },
-    servers: [{ url: 'http://localhost:5000' }]
+    servers: [{ url: 'https://refactored-doodle-64w9jw5wrwq244wr-5000.app.github.dev/' }]
   },
   apis: ['./routes/*.js']
 };
