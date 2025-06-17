@@ -1,7 +1,11 @@
+// 📁 controllers/googleController.js
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/token.js';
+import { OAuth2Client } from 'google-auth-library';
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const googleAuthRedirect = (req, res) => {
   const authURL = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
@@ -13,7 +17,7 @@ export const googleAuthRedirect = (req, res) => {
     prompt: 'consent'
   });
 
-  res.redirect(authURL); // this still needs to redirect to Google's OAuth page
+  res.redirect(authURL);
 };
 
 export const googleAuthCallback = async (req, res) => {
@@ -33,9 +37,12 @@ export const googleAuthCallback = async (req, res) => {
     });
 
     const tokens = await tokenRes.json();
-    const idToken = tokens.id_token;
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
 
-    const payload = JSON.parse(Buffer.from(idToken.split('.')[1], 'base64').toString());
+    const payload = ticket.getPayload();
 
     let user = await User.findOne({ googleId: payload.sub });
     if (!user) {
