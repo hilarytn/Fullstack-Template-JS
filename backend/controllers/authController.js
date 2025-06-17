@@ -32,20 +32,29 @@ export const verifyEmail = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user || !user.isVerified) return res.status(403).json({ message: 'Invalid or unverified user' });
+
+  const user = await User.findOne({ email }).select('+password');
+  if (!user || !user.isVerified) {
+    return res.status(403).json({ message: 'Invalid or unverified user' });
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+  if (!isMatch) {
+    return res.status(400).json({ message: 'Invalid credentials' });
+  }
+
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken();
   user.refreshToken = refreshToken;
   await user.save();
+
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: true,
     sameSite: 'Strict',
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
+
   res.status(200).json({ accessToken });
 };
 
