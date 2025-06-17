@@ -17,4 +17,14 @@ export const generateResetToken = () => {
   return { rawToken, hashed };
 };
 
+export const generateAccessToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: '15m' // or '10m' based on your desired lifespan
+  });
+};
+
+
+export const generateRefreshToken = () => {
+  return crypto.randomBytes(40).toString('hex');
+};
 
