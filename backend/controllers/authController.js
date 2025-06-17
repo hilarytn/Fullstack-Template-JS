@@ -74,7 +74,7 @@ export const logoutUser = async (req, res) => {
 export const refreshAccessToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: 'No refresh token' });
-  
+
   const user = await User.findOne({ refreshToken});
   if (!user) return res.status(403).json({ message: 'Invalid refresh token' });
   const accessToken = generateAccessToken(user._id);
@@ -83,16 +83,29 @@ export const refreshAccessToken = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
+
   const user = await User.findOne({ email });
   if (!user) return res.status(404).json({ message: 'User not found' });
-  const resetToken = generateResetToken();
-  const hashed = hashToken(resetToken);
+
+  // Generate and hash reset token
+  const { rawToken, hashed } = generateResetToken();
+
+  // Save hashed token and expiration to user
   user.resetPasswordToken = hashed;
-  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
   await user.save();
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-  const message = `<h2>Reset Password</h2><p><a href="${resetUrl}">Click to reset</a></p>`;
-  await sendEmail({ email: user.email, subject: 'Password Reset', message });
+
+  // Prepare reset link and message
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
+  const message = `<h2>Reset Password</h2><p><a href="${resetUrl}">Click to reset your password</a></p>`;
+
+  // Send the email
+  await sendEmail({
+    email: user.email,
+    subject: 'Password Reset Request',
+    message
+  });
+
   res.status(200).json({ message: 'Password reset email sent' });
 };
 
