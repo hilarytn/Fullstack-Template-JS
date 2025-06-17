@@ -1,4 +1,3 @@
-// 📁 routes/authRoutes.js
 import express from 'express';
 import protect from '../middlewares/authMiddleware.js';
 import validate from '../middlewares/validate.js';
@@ -28,56 +27,199 @@ import {
 const router = express.Router();
 
 /**
- * @route   POST /api/v1/auth/register
- * @desc    Register a new user
+ * @swagger
+ * components:
+ *   schemas:
+ *     RegisterUser:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *       properties:
+ *         name:
+ *           type: string
+ *           example: Hilary Titus
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: hilary@example.com
+ *         password:
+ *           type: string
+ *           example: password123
+ *     LoginUser:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           example: hilary@example.com
+ *         password:
+ *           type: string
+ *           example: password123
+ *     ForgotPassword:
+ *       type: object
+ *       required:
+ *         - email
+ *       properties:
+ *         email:
+ *           type: string
+ *           example: hilary@example.com
+ *     ResetPassword:
+ *       type: object
+ *       required:
+ *         - password
+ *       properties:
+ *         password:
+ *           type: string
+ *           example: newStrongPassword
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterUser'
+ *     responses:
+ *       201:
+ *         description: User registered successfully
  */
 router.post('/register', validate(registerSchema), registerUser);
 
 /**
- * @route   GET /api/v1/auth/verify-email
- * @desc    Verify user email
+ * @swagger
+ * /api/v1/auth/verify-email:
+ *   get:
+ *     summary: Verify user email
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email verification token
+ *     responses:
+ *       200:
+ *         description: Email verified
  */
 router.get('/verify-email', verifyEmail);
 
 /**
- * @route   POST /api/v1/auth/login
- * @desc    Login user
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginUser'
+ *     responses:
+ *       200:
+ *         description: Login successful
  */
 router.post('/login', validate(loginSchema), loginUser);
 
 /**
- * @route   POST /api/v1/auth/logout
- * @desc    Logout user
+ * @swagger
+ * /api/v1/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Logged out
  */
 router.post('/logout', protect, logoutUser);
 
 /**
- * @route   POST /api/v1/auth/refresh-token
- * @desc    Refresh access token
+ * @swagger
+ * /api/v1/auth/refresh-token:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Token refreshed
  */
 router.post('/refresh-token', refreshAccessToken);
 
 /**
- * @route   POST /api/v1/auth/forgot-password
- * @desc    Forgot password
+ * @swagger
+ * /api/v1/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ForgotPassword'
+ *     responses:
+ *       200:
+ *         description: Reset email sent
  */
 router.post('/forgot-password', protect, validate(forgotPasswordSchema), forgotPassword);
 
 /**
- * @route   POST /api/v1/auth/reset-password/:token
- * @desc    Reset password
+ * @swagger
+ * /api/v1/auth/reset-password/{token}:
+ *   post:
+ *     summary: Reset password using token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Password reset token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPassword'
+ *     responses:
+ *       200:
+ *         description: Password reset successful
  */
 router.post('/reset-password/:token', validate(resetPasswordSchema), resetPassword);
 
 /**
- * @route   GET /api/v1/auth/google
- * @desc    Google OAuth redirect
+ * @swagger
+ * /api/v1/auth/google:
+ *   get:
+ *     summary: Google OAuth redirect
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirect to Google
  */
 router.get('/google', googleAuthRedirect);
 
 /**
- * @route   GET /api/v1/auth/google/callback
- * @desc    Google OAuth callback
+ * @swagger
+ * /api/v1/auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Login via Google successful
  */
 router.get('/google/callback', googleAuthCallback);
 
